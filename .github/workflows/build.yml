@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -12,6 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -20,6 +24,7 @@ jobs:
           python3-pexpect xz-utils debianutils iputils-ping python3-git \
           python3-jinja2 libgl1-mesa-dev libsdl1.2-dev xterm \
           python3-subunit mesa-common-dev zstd liblz4-tool file
+
       - name: Clone Poky kirkstone
         run: |
           git clone -b kirkstone https://github.com/yoctoproject/poky.git ~/poky
@@ -59,16 +64,20 @@ jobs:
 
       - name: Find IPK files
         run: |
-          find ~/poky/build/tmp/deploy/ipk/cortexa72/ -name "*.ipk" \
-          | grep -v dbg | grep -v dev
+          find ~/poky/build/tmp/deploy/ipk -name "*.ipk"
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p release
+          cp ~/poky/build/tmp/deploy/ipk/cortexa72/calcapp_*.ipk release/
+          cp ~/poky/build/tmp/deploy/ipk/cortexa72/sysmonitor_*.ipk release/
+          ls -l release
 
       - name: Upload IPKs to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
           name: Latest OTA Release
-          files: |
-            ~/poky/build/tmp/deploy/ipk/cortexa72/calcapp_*.ipk
-            ~/poky/build/tmp/deploy/ipk/cortexa72/sysmonitor_*.ipk
+          files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

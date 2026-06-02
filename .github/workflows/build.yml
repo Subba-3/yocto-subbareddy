@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -32,10 +32,10 @@ jobs:
         run: |
           cp -r . ~/poky/meta-subbareddy
 
-      - name: Copy local.conf and bblayers.conf
+      - name: Setup build environment
         run: |
-          source ~/poky/oe-init-build-env ~/poky/build
-          cp ~/poky/meta-subbareddy/conf/local.conf ~/poky/build/conf/local.conf
+          cd ~/poky
+          source oe-init-build-env build
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-oe
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-python
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-networking
@@ -43,14 +43,20 @@ jobs:
           bitbake-layers add-layer ~/poky/meta-raspberrypi
           bitbake-layers add-layer ~/poky/meta-subbareddy
 
+      - name: Copy local.conf
+        run: |
+          cp ~/poky/meta-subbareddy/conf/local.conf ~/poky/build/conf/local.conf
+
       - name: Build calcapp
         run: |
-          source ~/poky/oe-init-build-env ~/poky/build
+          cd ~/poky
+          source oe-init-build-env build
           bitbake calcapp
 
       - name: Build sysmonitor
         run: |
-          source ~/poky/oe-init-build-env ~/poky/build
+          cd ~/poky
+          source oe-init-build-env build
           bitbake sysmonitor
 
       - name: Find IPK files

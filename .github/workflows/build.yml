@@ -23,7 +23,7 @@ jobs:
           python3-subunit mesa-common-dev zstd liblz4-tool file
       - name: Clone Poky kirkstone
         run: |
-          git clone -b kirkstone git://git.yoctoproject.org/poky ~/poky
+          git clone -b kirkstone https://github.com/yoctoproject/poky.git ~/poky
           git clone -b kirkstone https://github.com/agherzan/meta-raspberrypi ~/poky/meta-raspberrypi
           git clone -b kirkstone https://github.com/openembedded/meta-openembedded ~/poky/meta-openembedded
 

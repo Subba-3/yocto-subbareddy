@@ -1,0 +1,70 @@
+name: Build Yocto IPK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gawk wget git diffstat unzip texinfo \
+          gcc build-essential chrpath socat cpio python3 python3-pip \
+          python3-pexpect xz-utils debianutils iputils-ping python3-git \
+          python3-jinja2 libegl1-mesa libsdl1.2-dev xterm \
+          python3-subunit mesa-common-dev zstd liblz4-tool file
+
+      - name: Clone Poky kirkstone
+        run: |
+          git clone -b kirkstone git://git.yoctoproject.org/poky ~/poky
+          git clone -b kirkstone https://github.com/agherzan/meta-raspberrypi ~/poky/meta-raspberrypi
+          git clone -b kirkstone https://github.com/openembedded/meta-openembedded ~/poky/meta-openembedded
+
+      - name: Copy meta layer
+        run: |
+          cp -r . ~/poky/meta-subbareddy
+
+      - name: Copy local.conf and bblayers.conf
+        run: |
+          source ~/poky/oe-init-build-env ~/poky/build
+          cp ~/poky/meta-subbareddy/conf/local.conf ~/poky/build/conf/local.conf
+          bitbake-layers add-layer ~/poky/meta-openembedded/meta-oe
+          bitbake-layers add-layer ~/poky/meta-openembedded/meta-python
+          bitbake-layers add-layer ~/poky/meta-openembedded/meta-networking
+          bitbake-layers add-layer ~/poky/meta-openembedded/meta-multimedia
+          bitbake-layers add-layer ~/poky/meta-raspberrypi
+          bitbake-layers add-layer ~/poky/meta-subbareddy
+
+      - name: Build calcapp
+        run: |
+          source ~/poky/oe-init-build-env ~/poky/build
+          bitbake calcapp
+
+      - name: Build sysmonitor
+        run: |
+          source ~/poky/oe-init-build-env ~/poky/build
+          bitbake sysmonitor
+
+      - name: Find IPK files
+        run: |
+          find ~/poky/build/tmp/deploy/ipk/cortexa72/ -name "*.ipk" \
+          | grep -v dbg | grep -v dev
+
+      - name: Upload IPKs to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest OTA Release
+          files: |
+            ~/poky/build/tmp/deploy/ipk/cortexa72/calcapp_*.ipk
+            ~/poky/build/tmp/deploy/ipk/cortexa72/sysmonitor_*.ipk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

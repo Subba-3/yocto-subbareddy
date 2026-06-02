@@ -1,0 +1,21 @@
+IMAGE_INSTALL += " \
+    packagegroup-core-boot \
+    kernel-modules \
+    openssh \
+    usbutils \
+    v4l-utils \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    python3 \
+    wifiapp \
+    sysinfoapp \
+    iw \
+    wpa-supplicant \
+    dhcpcd \
+    iproute2 \
+    rfkill \
+    linux-firmware \
+    linux-firmware-rpidistro-bcm43455 \
+"

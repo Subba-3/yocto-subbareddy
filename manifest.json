@@ -1,0 +1,13 @@
+{
+    "version": "2.0",
+    "packages": [
+        {
+            "name": "calcapp",
+            "file": "calcapp_2.0-r0_cortexa72.ipk"
+        },
+        {
+            "name": "sysmonitor",
+            "file": "sysmonitor_1.0-r0_cortexa72.ipk"
+        }
+    ]
+}

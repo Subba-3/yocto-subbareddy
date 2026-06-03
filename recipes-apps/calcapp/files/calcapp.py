@@ -2,7 +2,7 @@
 
 import math
 
-VERSION = "3.0"
+VERSION = "5.0"
 
 def add(a, b): return a + b
 def subtract(a, b): return a - b
@@ -34,12 +34,7 @@ while True:
     print("  2.  Subtract")
     print("  3.  Multiply")
     print("  4.  Divide")
-    print("  5.  Power (a^b)")
-    print("  6.  Modulus (a % b)")
-    print("  7.  Percentage (a% of b)")
-    print("  8.  Square Root (√a)")
-    print("  9.  View History")
-    print("  10. Clear History")
+    
     print("  11. Exit")
 
     choice = input("\nEnter choice: ").strip()

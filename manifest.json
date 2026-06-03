@@ -2,7 +2,7 @@
   "apps": {
     "calcapp": {
       "version": "3.0",
-      "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/calcapp_3.0-r0_cortexa72.ipk",
+      "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/calcapp_4.0-r0_cortexa72.ipk",
       "sha256": "..."
     },
     "sysmonitor": {

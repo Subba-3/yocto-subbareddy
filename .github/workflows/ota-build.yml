@@ -1,4 +1,4 @@
-name: Build Yocto IPK
+name: Build Yocto OTA Release
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install dependencies
@@ -25,7 +25,7 @@ jobs:
           python3-jinja2 libgl1-mesa-dev libsdl1.2-dev xterm \
           python3-subunit mesa-common-dev zstd liblz4-tool file
 
-      - name: Clone Poky kirkstone
+      - name: Clone Poky (Kirkstone)
         run: |
           git clone -b kirkstone https://github.com/yoctoproject/poky.git ~/poky
           git clone -b kirkstone https://github.com/agherzan/meta-raspberrypi ~/poky/meta-raspberrypi
@@ -39,6 +39,7 @@ jobs:
         run: |
           cd ~/poky
           source oe-init-build-env build
+
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-oe
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-python
           bitbake-layers add-layer ~/poky/meta-openembedded/meta-networking
@@ -50,34 +51,59 @@ jobs:
         run: |
           cp ~/poky/meta-subbareddy/conf/local.conf ~/poky/build/conf/local.conf
 
-      - name: Build calcapp
+      - name: Build applications
         run: |
           cd ~/poky
           source oe-init-build-env build
-          bitbake calcapp
 
-      - name: Build sysmonitor
-        run: |
-          cd ~/poky
-          source oe-init-build-env build
+          bitbake calcapp
           bitbake sysmonitor
 
-      - name: Find IPK files
-        run: |
-          find ~/poky/build/tmp/deploy/ipk -name "*.ipk"
-
-      - name: Prepare artifacts
+      - name: Collect IPK artifacts
         run: |
           mkdir -p release
-          cp ~/poky/build/tmp/deploy/ipk/cortexa72/calcapp_*.ipk release/
-          cp ~/poky/build/tmp/deploy/ipk/cortexa72/sysmonitor_*.ipk release/
+
+          find ~/poky/build/tmp/deploy/ipk -name "calcapp_*.ipk" -exec cp {} release/ \;
+          find ~/poky/build/tmp/deploy/ipk -name "sysmonitor_*.ipk" -exec cp {} release/ \;
+
           ls -l release
 
-      - name: Upload IPKs to GitHub Release
+      - name: Generate manifest.json
+        run: |
+          cd release
+
+          CALC_IPK=$(ls calcapp_*.ipk)
+          SYS_IPK=$(ls sysmonitor_*.ipk)
+
+          CALC_SHA=$(sha256sum "$CALC_IPK" | awk '{print $1}')
+          SYS_SHA=$(sha256sum "$SYS_IPK" | awk '{print $1}')
+
+          VERSION=${GITHUB_RUN_NUMBER}
+
+          cat <<EOF > manifest.json
+          {
+            "apps": {
+              "calcapp": {
+                "version": "$VERSION",
+                "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/$CALC_IPK",
+                "sha256": "$CALC_SHA"
+              },
+              "sysmonitor": {
+                "version": "$VERSION",
+                "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/$SYS_IPK",
+                "sha256": "$SYS_SHA"
+              }
+            }
+          }
+          EOF
+
+          cat manifest.json
+
+      - name: Upload OTA Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
-          name: Latest OTA Release
+          name: Latest OTA Build
           files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

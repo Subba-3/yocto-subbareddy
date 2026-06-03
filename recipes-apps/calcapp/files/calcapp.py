@@ -2,7 +2,7 @@
 
 import math
 
-VERSION = "2.0"
+VERSION = "3.0"
 
 def add(a, b): return a + b
 def subtract(a, b): return a - b

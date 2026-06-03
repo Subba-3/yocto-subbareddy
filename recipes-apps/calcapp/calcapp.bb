@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 SRC_URI = "file://calcapp.py"
 
 S = "${WORKDIR}"
-PV ="3.0"
+PV ="4.0"
 RDEPENDS:${PN} += "python3-core"
 
 do_install() {

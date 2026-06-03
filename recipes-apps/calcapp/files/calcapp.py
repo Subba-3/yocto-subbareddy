@@ -25,7 +25,7 @@ def square_root(a):
 history = []
 
 print("=================================")
-print(f"   SUBBU OS - Calculator v{VERSION}")
+print(f"   🚀 SUBBU OS - CALCAPP v4.0 (OTA TEST BUILD)")
 print("=================================")
 
 while True:

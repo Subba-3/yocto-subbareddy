@@ -1,14 +1,14 @@
 {
   "apps": {
-    "sysinfoapp": {
-      "version": "1.1",
-      "url": "https://github.com/.../sysinfoapp_1.1.ipk",
-      "sha256": "abc123"
+    "calcapp": {
+      "version": "3.0",
+      "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/calcapp_3.0-r0_cortexa72.ipk",
+      "sha256": "..."
     },
-    "wifiapp": {
-      "version": "1.2",
-      "url": "https://github.com/.../wifiapp_1.2.ipk",
-      "sha256": "def456"
+    "sysmonitor": {
+      "version": "1.0",
+      "url": "https://github.com/Subba-3/yocto-subbareddy/releases/download/latest/sysmonitor_1.0-r0_cortexa72.ipk",
+      "sha256": "..."
     }
   }
 }

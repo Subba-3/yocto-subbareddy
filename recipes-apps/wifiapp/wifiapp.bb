@@ -10,9 +10,7 @@ S = "${WORKDIR}"
 
 RDEPENDS:${PN} += " \
     iw \
-    rfkill \
     wpa-supplicant \
-    dhcpcd \
     iproute2 \
     busybox \
 "
